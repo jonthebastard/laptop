@@ -1,7 +1,7 @@
 ##### shell stuff ####################
 if [ ! -f ~/.oh-my-zsh/custom/themes/gitster/gitster.zsh-theme ] ; then
   cd ~/.oh-my-zsh/custom/themes/gitster/
-  curl --remote-name https://raw.githubusercontent.com/shashankmehta/dotfiles/blob/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
+  curl --remote-name https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
 fi
 
 export ZSH="$HOME/.oh-my-zsh"

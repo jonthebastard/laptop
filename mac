@@ -1,0 +1,134 @@
+#!/bin/bash
+
+# functions
+fancy_echo() {
+  # shellcheck disable=SC2039
+  local fmt="$1"; shift
+
+  # shellcheck disable=SC2059
+  printf "\n$fmt\n" "$@"
+}
+
+verify_brew() { brew list -1 | grep -Fqx "$1" ; }
+
+current_ruby() { rbenv version | sed -E 's/ .*$//' ; }
+
+set_ruby() { rbenv global "$(current_ruby)" ; }
+
+# shellcheck disable=SC2154
+trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+
+set -e
+
+[ ! -d "$HOME/.bin/" ] && mkdir "$HOME/.bin"
+
+if grep "$(command -v zsh)" > /dev/null 2>&1 < /etc/shells; then
+  fancy_echo "Changing shell to zsh..."
+  sudo echo \"\$(command -v zh)\" >> /etc/shells
+  chsh -s \"\$(command -v zs)\"
+fi
+
+if ! command -v brew >/dev/null; then
+  fancy_echo "Installing Homebrew ..."
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+else
+  fancy_echo "Homebrew already installed. Skipping ..."
+fi
+
+fancy_echo "Updating Homebrew..."
+brew update
+brew upgrade --all
+
+fancy_echo "Verifying the Homebrew installation..."
+if brew doctor; then
+  fancy_echo "Your Homebrew installation is good to go."
+else
+  fancy_echo "Your Homebrew installation reported some errors or warnings."
+  echo "If the warnings are related to Python, you can ignore them."
+  echo "Otherwise, review the Homebrew messages to see if any action is needed."
+fi
+
+fancy_echo "Installing formulas and casks from the Brewfile ..."
+if brew bundle --file="$HOME/Brewfile"; then
+  fancy_echo "All formulas and casks were installed successfully."
+else
+  fancy_echo "Some formulas or casks failed to install."
+  echo "This is usually due to one of the Mac apps being already installed,"
+  echo "in which case, you can ignore these errors."
+fi
+
+fancy_echo 'Checking on Node.js installation...'
+if ! verify_brew "node"; then
+  if command -v n > /dev/null; then
+    fancy_echo "We recommend using \`nvm\` and not \`n\`."
+  elif ! command -v nvm > /dev/null; then
+    fancy_echo 'Installing nvm and lts Node.js and npm...'
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    # shellcheck source=/dev/null
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    # nvm is a bash script itself, some commands of which may fail WITHOUT
+    # causing the whole operation to fail. To accomdate that, disable exit on
+    # any nonzero exit code while nvm runs.
+    set +e
+
+    nvm install --lts
+
+    # Turn it back on when nvm is done, since the rest of this script may have
+    # been written assuming this behavior.
+    set -e
+  else
+    fancy_echo 'version manager detected.  Skipping...'
+  fi
+else
+  brew bundle --file=- <<EOF
+  brew 'node'
+EOF
+fi
+fancy_echo 'Finished Node.js installation checks.'
+
+fancy_echo 'Checking on Python installation...'
+latest_python_3="$(brew info python3 | grep -E -o "3\.\d+\.\d+" | head -1)"
+if ! pyenv versions | ag "$latest_python_3" > /dev/null; then
+  # Starting with macOS 10.14 (Mojave), the header files for system libraries
+  # have been moved. Rather than hack the header paths based on OS version,
+  # just install zlib with brew and build against that directly for now.
+  brew install zlib
+  export LDFLAGS="-L/usr/local/opt/zlib/lib"
+  export CPPFLAGS="-I/usr/local/opt/zlib/include"
+  pyenv install "$latest_python_3"
+  pyenv global "$latest_python_3"
+  pyenv rehash
+fi
+fancy_echo '...Finished Python installation checks.'
+
+fancy_echo 'Checking on Ruby installation...'
+if ! grep -qs '^gem: --no-document$' "$HOME/.gemrc"; then
+  printf "\n%s\n" "gem: --no-document" >> "$HOME/.gemrc"
+fi
+
+latest_ruby="$(brew info ruby | grep -E -o "\d+\.\d+\.\d+" | head -1)"
+if ! rbenv versions | ag "$latest_ruby" > /dev/null; then
+  rbenv install "$latest_ruby"
+  rbenv global "$latest_ruby"
+  eval "$(rbenv init - bash)"
+fi
+
+fancy_echo 'Updating Rubygems...'
+gem update --system
+
+if gem list bundler | grep "^bundler ("; then
+  fancy_echo 'Updating bundler...'
+  gem update bundler
+else
+  fancy_echo 'Installing bundler...'
+  gem install bundler
+fi
+
+fancy_echo "Configuring Bundler ..."
+number_of_cores=$(sysctl -n hw.ncpu)
+bundle config --global jobs $((number_of_cores - 1))
+
+fancy_echo '...Finished Ruby installation checks.'
+
+fancy_echo 'All done!'
