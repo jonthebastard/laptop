@@ -1,15 +1,17 @@
 ##### run ####################
 run() {
-  if [ -t 1 ]; then
-    echo -ne '\\033[1;34m'
-  fi
+    if [ -t 1 ]; then
+        echo -ne "\\033[1;36m"
+    fi
 
-  echo >&2 "+ $*"
+    echo -n >&2 "+ $*"
 
-  if [ -t 1 ]; then
-    echo -ne '\033[m'
-  fi
-  "$@"
+    if [ -t 1 ]; then
+        echo -ne '\033[m'
+    fi
+
+    echo
+    "$@"
 }
 
 ##### shell stuff ####################

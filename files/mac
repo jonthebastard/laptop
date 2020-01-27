@@ -2,16 +2,18 @@
 
 # functions
 run() {
-  if [ -t 1 ]; then
-    echo -ne '\\033[1;34m'
-  fi
+    if [ -t 1 ]; then
+        echo -ne "\\033[1;36m"
+    fi
 
-  echo >&2 "+ $*"
+    echo -n >&2 "+ $*"
 
-  if [ -t 1 ]; then
-    echo -ne '\033[m'
-  fi
-  "$@"
+    if [ -t 1 ]; then
+        echo -ne '\033[m'
+    fi
+
+    echo
+    "$@"
 }
 
 fancy_echo() {
@@ -147,6 +149,8 @@ fancy_echo '...Finished Ruby installation checks.'
 fancy_echo 'Installing oh-my-zsh and gitster theme...'
 run sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh --unattended)"
 run mkdir -p ~/.oh-my-zsh/custom/themes/gitster/
-run curl -fsSL https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme > ~/.oh-my-zsh/custom/themes/gitster.zsh-theme
+cd ~/.oh-my-zsh/custom/themes/gitster/
+run curl -sS --remote https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
+cd -
 
 fancy_echo 'All done!'
