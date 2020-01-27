@@ -147,7 +147,7 @@ run bundle config --global jobs $((number_of_cores - 1))
 fancy_echo '...Finished Ruby installation checks.'
 
 fancy_echo 'Installing oh-my-zsh and gitster theme...'
-run sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh --unattended)"
+run sh -c "$(curl -fsSL 'https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh --unattended')"
 run mkdir -p ~/.oh-my-zsh/custom/themes/gitster/
 cd ~/.oh-my-zsh/custom/themes/gitster/
 run curl -sS --remote-name https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
