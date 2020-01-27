@@ -6,6 +6,7 @@ tap "homebrew/core"
 tap "homebrew/services"
 
 # lib
+brew "1password-cli"
 brew "cmake"
 brew "ffmpeg"
 brew "gettext"
@@ -42,11 +43,13 @@ brew "telnet"
 brew "the_silver_searcher"
 
 # cask
+cask "1password"
 cask "alfred"
 cask "caprine"
 cask "chromedriver"
 cask "disk-inventory-x"
 cask "docker"
+cask "google-backup-and-sync"
 cask "flux"
 cask "handbrake"
 cask "hazel"
