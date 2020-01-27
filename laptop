@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# files to pull from repo
+read -r -d '' files <<'EOF'
+.zshrc
+Brewfile
+mac
+EOF
+
 # install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
@@ -8,7 +15,7 @@ cd ~/.oh-my-zsh/custom/themes/gitster/
 curl --remote-name https://raw.githubusercontent.com/shashankmehta/dotfiles/blob/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
 
 cd ~
-for file in $(ls $files) ; do
+for file in $(echo $files | sed -e 's/\n/ /') ; do
   curl --remote-name https://raw.githubusercontent.com/jonthebastard/laptop/master/files/$file
 done
 
