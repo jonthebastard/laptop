@@ -50,7 +50,7 @@ fi
 
 fancy_echo "Updating Homebrew..."
 run brew update
-run brew upgrade --all
+run brew upgrade
 
 fancy_echo "Verifying the Homebrew installation..."
 if run brew doctor; then
