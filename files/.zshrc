@@ -18,7 +18,9 @@ run() {
 theme='.oh-my-zsh/custom/themes/gitster.zsh-theme'
 if [[ ! -f "~/${theme}" ]] ; then
   run mkdir -p ~/.oh-my-zsh/custom/themes/gitster/
-  run curl -fsSL https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/$theme > ~/$theme
+  cd ~/.oh-my-zsh/custom/themes/gitster/
+  run curl -sS --remote-name https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/$theme
+  cd -
 fi
 
 export ZSH="$HOME/.oh-my-zsh"
