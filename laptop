@@ -9,7 +9,7 @@ EOF
 
 cd ~
 for file in $(echo $files | sed -e 's/\n/ /') ; do
-  curl -fsSL https://raw.githubusercontent.com/jonthebastard/laptop/master/files/$file > $file
+  curl -sS --remote-name https://raw.githubusercontent.com/jonthebastard/laptop/master/files/$file
 done
 
 /usr/bin/env bash mac 2>&1 | tee laptop.log
