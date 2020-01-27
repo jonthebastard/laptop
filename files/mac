@@ -3,7 +3,7 @@
 # functions
 run() {
   if [ -t 1 ]; then
-    echo -ne "\\033[1;34m"
+    echo -ne '\\033[1;34m'
   fi
 
   echo >&2 "+ $*"
@@ -143,5 +143,10 @@ number_of_cores=$(sysctl -n hw.ncpu)
 run bundle config --global jobs $((number_of_cores - 1))
 
 fancy_echo '...Finished Ruby installation checks.'
+
+fancy_echo 'Installing oh-my-zsh and gitster theme...'
+run sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh --unattended)"
+run mkdir -p ~/.oh-my-zsh/custom/themes/gitster/
+run curl -fsSL https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme > ~/.oh-my-zsh/custom/themes/gitster.zsh-theme
 
 fancy_echo 'All done!'

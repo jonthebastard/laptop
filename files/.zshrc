@@ -1,7 +1,22 @@
+##### run ####################
+run() {
+  if [ -t 1 ]; then
+    echo -ne '\\033[1;34m'
+  fi
+
+  echo >&2 "+ $*"
+
+  if [ -t 1 ]; then
+    echo -ne '\033[m'
+  fi
+  "$@"
+}
+
 ##### shell stuff ####################
-if [ ! -f ~/.oh-my-zsh/custom/themes/gitster/gitster.zsh-theme ] ; then
-  cd ~/.oh-my-zsh/custom/themes/gitster/
-  curl --remote-name https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
+theme='.oh-my-zsh/custom/themes/gitster.zsh-theme'
+if [[ ! -f "~/${theme}" ]] ; then
+  run mkdir -p ~/.oh-my-zsh/custom/themes/gitster/
+  run curl -fsSL https://raw.githubusercontent.com/shashankmehta/dotfiles/master/thesetup/zsh/$theme > ~/$theme
 fi
 
 export ZSH="$HOME/.oh-my-zsh"
@@ -17,13 +32,15 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/.rbenv:$HOME/.pyenv:/usr/local/sbin:/usr/local/opt/go/libexec/bin:$HOME/.bin:$PATH"
 
 ##### ssh ####################
-for key in $(find ~/.ssh -name '*.pub') ; do
-  if [ -f $key ] ; then
-    while ! ssh-add -L | grep -q "$(cat ${key})" ; do
-      ssh-add -K $key
-    done
-  fi
-done
+if [ -d ~/.ssh ] ; then
+  for key in $(find ~/.ssh -name '*.pub') ; do
+    if [ -f $key ] ; then
+      while ! ssh-add -L | grep -q "$(cat ${key})" ; do
+        ssh-add -K $key
+      done
+    fi
+  done
+fi
 
 ##### github ####################
 alias gs="git status"
