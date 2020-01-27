@@ -6,7 +6,6 @@ tap "homebrew/core"
 tap "homebrew/services"
 
 # lib
-brew "1password-cli"
 brew "cmake"
 brew "ffmpeg"
 brew "gettext"
@@ -44,6 +43,7 @@ brew "the_silver_searcher"
 
 # cask
 cask "1password"
+cask "1password-cli"
 cask "alfred"
 cask "caprine"
 cask "chromedriver"
@@ -55,7 +55,6 @@ cask "handbrake"
 cask "hazel"
 cask "iterm2"
 cask "keepassxc"
-cask "logitech-myharmony"
 cask "macdown"
 cask "makemkv"
 cask "michaelvillar-timer"
